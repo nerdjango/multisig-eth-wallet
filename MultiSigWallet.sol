@@ -4,6 +4,7 @@ pragma abicoder v2;
 
 contract MultiSigWallet{
     address[] public owners;
+    event TxApproved(address indexed approvedBy, uint indexed index_, address receiver, uint amount)
     uint limits;
     //  ["0x5B38Da6a701c568545dCfcB03FcB875f56beddC4", "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2", "0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db"] 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
     constructor(address[] memory _owners) {
@@ -41,15 +42,23 @@ contract MultiSigWallet{
         bool hasBeenSent;
         uint id;
     }
-    mapping(address=>mapping(uint=>bool)) public approvals;
-    Transaction[] public txRequests;
+    
+    // Approval maps an owner to the id of a transaction which maps to True/False, depending on whether a user has approved a given transaction or not.
+    mapping(address=>mapping(uint=>bool)) public approvals; 
+    Transaction[] public txRequests; // Transaction list
+    
+    // Performs a transfer from the multisig wallet. which in turn requires two-third of signatories to approve in order to complete.
     function makeTransfer(address payable _to, uint _amount) public {
         require(address(this).balance>=_amount, "Insufficient balance!");
         uint _index=txRequests.length;
         txRequests.push(Transaction(_amount, _to, 1, false, _index));
         approvals[msg.sender][_index]=true;
     }
-    function approveTransfer(uint _index) public {
+    
+    // Owners can approve Transactions from this function. 
+    // It also checks to confirm if up to two-third of the owners have approved the transaction in order to confirm said transaction.
+    // Also makes sure an owner can not approve a transaction twice.
+    function approveTransfer(uint _index) public isOwner{
         if (_index>=txRequests.length) return;
         require(approvals[msg.sender][_index]==false);
         require(txRequests[_index].hasBeenSent==false);
@@ -60,13 +69,18 @@ contract MultiSigWallet{
             txRequests[_index].receiver.transfer(txRequests[_index].amount);
             txRequests[_index].hasBeenSent=true;
         }
+        emit TxApproved(msg.sender, _index, txRequests[_index].receiver, txRequests[_index].amount)
     }
     
+    // Deposit Function anybody can deposit to this contract using deposit()
     function deposit() public payable returns(uint) {}
+    
+    // Get MultiSig Wallet balance. Only owners can access this function
     function getBalance() public view isOwner returns(uint) {
         return address(this).balance;
     }
     
+    // Returns List of Transactions
     function getTxRequests() public view returns (Transaction[] memory){
         return txRequests;
     }
