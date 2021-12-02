@@ -1,0 +1,25 @@
+{
+  "name": "multisig-eth-wallet",
+  "version": "1.0.0",
+  "description": "A wallet that requires 2/3 signature from the signatories of the account to verify transfer of funds from the contract",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nerdjango/multisig-eth-wallet.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nerdjango/multisig-eth-wallet/issues"
+  },
+  "homepage": "https://github.com/nerdjango/multisig-eth-wallet#readme",
+  "dependencies": {
+    "truffle-assertions": "^0.9.2"
+  }
+}
