@@ -1,10 +1,10 @@
 // SPDX-License-Identifier:MIT
-pragma solidity 0.7.5;
+pragma solidity ^0.8.0;
 pragma abicoder v2;
 
 contract MultiSigWallet{
     address[] public owners;
-    event TxApproved(address indexed approvedBy, uint indexed index_, address receiver, uint amount)
+    event TxApproved(address indexed approvedBy, uint indexed index_, address receiver, uint amount);
     uint limits;
     //  ["0x5B38Da6a701c568545dCfcB03FcB875f56beddC4", "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2", "0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db"] 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
     constructor(address[] memory _owners) {
@@ -69,7 +69,7 @@ contract MultiSigWallet{
             txRequests[_index].receiver.transfer(txRequests[_index].amount);
             txRequests[_index].hasBeenSent=true;
         }
-        emit TxApproved(msg.sender, _index, txRequests[_index].receiver, txRequests[_index].amount)
+        emit TxApproved(msg.sender, _index, txRequests[_index].receiver, txRequests[_index].amount);
     }
     
     // Deposit Function anybody can deposit to this contract using deposit()
